@@ -1,15 +1,24 @@
 import { GetServerSideProps } from 'next';
 import clientPromise from '@/lib/mongodb';
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Container, Typography, Button, Stack } from '@mui/material';
 import MarkdownPreview from '@/components/MarkdownPreview';
+import AdminCheck from '@/components/AdminCheck';
+import { useRouter } from 'next/router';
 
 export default function ProjectDetail({ project }: any) {
-  return (
+  
+    const router = useRouter();
+  
+    return (
     <Container maxWidth="md" sx={{ py: 6 }}>
+     
       {/* Title */}
-      <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-        {project.title}
-      </Typography>
+      <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
+        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700 }}> {project.title} </Typography>
+        <AdminCheck>
+            <Button variant='contained' color='info' onClick={() => router.push(`/admin/edit/${project.slug}`)}>EDIT</Button>
+        </AdminCheck>
+      </Stack>
 
       {/* Date */}
       <Typography
@@ -56,6 +65,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     ...project,
     _id: project._id.toString(),
     createdAt: project.createdAt?.toString() ?? '',
+    updatedAt: project.updatedAt?.toString() ?? ''
   };
 
   return {

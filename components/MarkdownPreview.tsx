@@ -147,6 +147,7 @@ export default function MarkdownPreview({ content }: MarkdownPreviewProps) {
                   px: 2,
                   py: 1,
                   my: 2,
+                  mx: 0,
                   fontStyle: 'italic',
                   color: 'text.secondary',
                 }}

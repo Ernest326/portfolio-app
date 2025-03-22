@@ -44,7 +44,7 @@ export default function ImageUploader({ onUpload }: ImageUploaderProps) {
       <Typography variant="subtitle1" gutterBottom>
         Upload Image to Embed:
       </Typography>
-      <Button variant="outlined" component="label" disabled={uploading}>
+      <Button variant="outlined" color="info" component="label" disabled={uploading}>
         {uploading ? 'Uploading...' : 'Choose Image'}
         <input
           type="file"

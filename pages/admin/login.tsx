@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {Container, TextField, Button, Typography} from '@mui/material';
 import { AdminProvider, useAdmin } from '@/context/AdminContext';
-import { GetServerSideProps } from 'next';
 
 const LOCAL_STORAGE_KEY = 'admin_token';
 
@@ -14,7 +13,7 @@ export default function AdminLogin() {
     isAdmin ? (
     <>
         <Container maxWidth="sm" sx={{ mt: 4 }}>
-            <Typography variant="h5">Loggen In</Typography>
+            <Typography variant="h5" mb={4}>Logged In As Admin</Typography>
             <Button variant="contained" color="error" onClick={logout}>
                 Logout
             </Button>
@@ -40,7 +39,3 @@ export default function AdminLogin() {
 
   );
 }
-
-export const getServerSideProps: GetServerSideProps = async () => {
-    return { props: {} }; // disables static generation
-  };

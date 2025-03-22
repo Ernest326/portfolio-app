@@ -21,14 +21,14 @@ interface LayoutProps {
               sx={{ cursor: 'pointer', fontWeight: 700 }}
               onClick={() => router.push('/')}
             >
-              My Portfolio
+              About Me
             </Typography>
   
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               <Button color="inherit" onClick={() => router.push('/projects')}>
                 Projects
               </Button>
-              <Button color="inherit" onClick={() => router.push('/admin')}>
+              <Button color="inherit" onClick={() => router.push('/admin/login')}>
                 Admin
               </Button>
               <Tooltip title={`Switch to ${mode === 'light' ? 'dark' : 'light'} mode`}>

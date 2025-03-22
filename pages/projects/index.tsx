@@ -27,16 +27,8 @@ export default function ProjectsPage() {
   return (
     <AdminProvider>
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h3" gutterBottom>
-        Projects
-      </Typography>
-
-      <AdminCheck>
-        <Button variant="contained" color="primary" href="/admin/create-post">
-          Create New Project
-        </Button>
-      </AdminCheck>
-
+      <Typography variant="h3" gutterBottom> Projects</Typography>
+      <AdminCheck> <Button variant="contained" color="info" sx={{mb: 5}} href="/admin/create-post"> Create New Project </Button> </AdminCheck>
       <Grid container spacing={4}>
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
