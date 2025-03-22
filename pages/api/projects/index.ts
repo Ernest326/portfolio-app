@@ -7,13 +7,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'GET') {
     const projects = await db.collection('projects').find().toArray();
-    res.status(200).json(projects);
-  } else if (req.method === 'POST') {
-    const { title, slug, content, images = [], description } = req.body;
-    const newProject = { title, slug, content, images, description, createdAt: new Date() };
-    await db.collection('projects').insertOne(newProject);
-    res.status(201).json({ message: 'Project created' });
-  } else {
-    res.status(405).end();
+    return res.status(200).json(projects);
   }
+
+  if (req.method === 'POST') {
+    const secret = req.headers['x-admin-secret'];
+
+    if (secret !== process.env.ADMIN_SECRET) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+
+    const { title, slug, content, description, coverImage, status, tags } = req.body;
+    const newProject = { title, slug, content, description, coverImage, status, tags, createdAt: new Date() };
+    await db.collection('projects').insertOne(newProject);
+    return res.status(201).json({ message: 'Project created' });
+  }
+
+  res.status(405).end();
 }
