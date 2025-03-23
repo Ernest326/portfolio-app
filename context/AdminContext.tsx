@@ -37,10 +37,20 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
     });
     }, []);
 
+  const adminCheck = (token : string) => {
+    fetch('/api/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token }),
+    }).then((res) => {
+      setIsAdmin(res.ok);
+    });
+  };
+
   const login = (newToken: string) => {
     localStorage.setItem(LOCAL_STORAGE_KEY, newToken);
     setToken(newToken);
-    setIsAdmin(true);
+    adminCheck(newToken);
   };
 
   const logout = () => {
