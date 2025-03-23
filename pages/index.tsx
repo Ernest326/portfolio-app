@@ -1,5 +1,6 @@
 import { Box, Button, Container, Typography, Stack, Avatar } from '@mui/material';
 import { useRouter } from 'next/router';
+import { motion } from 'framer-motion';
 
 export default function HomePage() {
   const router = useRouter();
@@ -14,18 +15,42 @@ export default function HomePage() {
       >
         {/* Text Content */}
         <Box flex={1}>
-          <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
-            Heyo, I'm Ernest 👋
-          </Typography>
 
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+          <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 700 }}>
+            Hey, I'm Ernest 👋
+          </Typography>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+          >
           <Typography variant="h5" color="text.secondary" gutterBottom>
             I’m a Computer Science student currently studying at Maynooth University
           </Typography>
+          </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.6 }}
+          >
           <Typography variant="body1" sx={{ mt: 2, mb: 4 }}>
             This website is currently in development however feel free to check out my projects or contact me if you have any questions.
           </Typography>
+          </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+          >
           <Stack direction="row" spacing={2}>
             <Button variant="contained" onClick={() => router.push('/projects')}>
               View Projects
@@ -34,9 +59,15 @@ export default function HomePage() {
               Contact Me
             </Button>
           </Stack>
+          </motion.div>
         </Box>
 
         {/* Optional Avatar */}
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+        >
         <Avatar
           alt="Ernest"
           src="/profile.jpg" // <- put your image in /public/profile.jpg
@@ -48,7 +79,14 @@ export default function HomePage() {
             borderColor: 'background.paper',
           }}
         />
+        </motion.div>
       </Stack>
+
+      <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+      >
       <Typography variant="body1" sx={{ mt: 10, mb: 4 }}> 
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec aliquam elit eget nisl commodo accumsan. In posuere augue libero, eget placerat tortor ultrices at. Nullam finibus turpis id lacus dapibus finibus et sed nisl. Duis eget mi ex. Proin sed placerat diam. Quisque ullamcorper augue erat. Sed bibendum sagittis mauris, accumsan sollicitudin tellus euismod eget. Maecenas at iaculis nulla.
             
@@ -59,7 +97,8 @@ export default function HomePage() {
             Curabitur et dapibus libero. Vestibulum sit amet nibh convallis quam euismod iaculis. Morbi posuere felis ut nisi elementum egestas. Curabitur id ultrices magna. Donec sit amet sem consequat, aliquam urna in, luctus est. Suspendisse ut scelerisque eros, finibus viverra justo. Aliquam aliquet lacinia odio quis dapibus. In hac habitasse platea dictumst. Praesent non mi semper, sagittis elit in, tempor nisl.
             
             Praesent at neque odio. Nam ultricies purus eget vehicula cursus. Donec dapibus sapien id nibh faucibus aliquam. Maecenas elementum orci nisl, id mollis quam gravida nec. Nunc in porttitor libero, sit amet pretium ligula. In vestibulum lobortis posuere. Proin rhoncus tellus turpis, in hendrerit sapien dignissim a. Integer gravida velit eu felis feugiat, eget imperdiet urna pretium. In sit amet est metus. 
-                      </Typography>
+        </Typography>
+        </motion.div>
     </Container>
   );
 }

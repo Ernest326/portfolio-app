@@ -3,6 +3,7 @@ import { Container, Typography, Grid, Skeleton, Button, Box, TextField, InputLab
 import ProjectCard from '@/components/ProjectCard';
 import { AdminProvider } from '@/context/AdminContext';
 import AdminCheck from '@/components/AdminCheck';
+import { motion } from 'framer-motion';
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -108,8 +109,14 @@ export default function ProjectsPage() {
                 <Skeleton width="40%" />
               </Grid>
             ))
-          : filteredProjects.map((project) => (
+          : filteredProjects.map((project, i) => (
             <Grid item xs={12} sm={6} md={4} sx={{display: 'flex'}}>
+                <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05, duration: 0.4, ease: 'easeOut' }}
+                style={{ width: '100%' }}
+                >
                 <ProjectCard
                     title={project.title}
                     slug={project.slug}
@@ -118,6 +125,7 @@ export default function ProjectsPage() {
                     status={project.status}
                     tags={project.tags}
                 />
+                </motion.div>
             </Grid>
             ))}
       </Grid>

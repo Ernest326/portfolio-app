@@ -43,7 +43,7 @@ interface LayoutProps {
         <Box component="main" sx={{ py: 4, px: 2 }}>{children}</Box>
   
         <Box component="footer" sx={{ textAlign: 'center', py: 3, fontSize: '0.875rem', color: 'text.secondary' }}>
-          &copy; {new Date().getFullYear()} My Portfolio
+          &copy; {new Date().getFullYear()} Ernest's Portfolio
         </Box>
       </Box>
     );
