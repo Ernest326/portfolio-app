@@ -1,9 +1,10 @@
 import { GetServerSideProps } from 'next';
 import clientPromise from '@/lib/mongodb';
-import { Box, Container, Typography, Button, Stack } from '@mui/material';
+import { Box, Container, Typography, Button, Stack, IconButton } from '@mui/material';
 import MarkdownPreview from '@/components/MarkdownPreview';
 import AdminCheck from '@/components/AdminCheck';
 import { useRouter } from 'next/router';
+import { ArrowBack } from '@mui/icons-material';
 
 export default function ProjectDetail({ project }: any) {
   
@@ -13,8 +14,11 @@ export default function ProjectDetail({ project }: any) {
     <Container maxWidth="md" sx={{ py: 6 }}>
      
       {/* Title */}
+      <IconButton onClick={() => router.back()}>
+          <ArrowBack />
+        </IconButton>
       <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
-        <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 700 }}> {project.title} </Typography>
+        <Typography variant="h3" component="h1" gutterBottom sx={{ flexGrow: 1, fontWeight: 700 }}> {project.title} </Typography>
         <AdminCheck>
             <Button variant='contained' color='info' onClick={() => router.push(`/admin/edit/${project.slug}`)}>EDIT</Button>
         </AdminCheck>

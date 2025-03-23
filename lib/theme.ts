@@ -7,25 +7,25 @@ export const getTheme = (mode: 'light' | 'dark') =>
       ...(mode === 'light'
         ? {
             background: {
-              default: '#f9f9f9',
+              default: '#f0f0f0',
               paper: '#ffffff',
             },
           }
         : {
             background: {
-              default: '#121212',
-              paper: '#1e1e1e',
+              default: '#1f1f1f',
+              paper: '#191919',
             },
           }),
       ...(mode === 'light'
         ? {
             primary: {
-              main: '#e0c787',
+              main: '#5985ab',
             },
           }
         : {
             primary: {
-              main: '#35246e',
+              main: '#4a378c',
             },
           }),
     },

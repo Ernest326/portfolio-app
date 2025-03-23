@@ -40,6 +40,7 @@ export default function ProjectForm({initialData, onSubmit}: ProjectFormProps) {
               <MenuItem value="Completed">Completed</MenuItem>
               <MenuItem value="In Progress">In Progress</MenuItem>
               <MenuItem value="Planned">Planned</MenuItem>
+              <MenuItem value="Dropped">Dropped</MenuItem>
           </Select>
       </FormControl>
       <Autocomplete multiple freeSolo options={[]} value={tags} onChange={(_, newValue) => setTags(newValue)} renderInput={(params) => (

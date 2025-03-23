@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Container, Typography, Grid, Skeleton, Button} from '@mui/material';
+import { useState, useEffect, useMemo } from 'react';
+import { Container, Typography, Grid, Skeleton, Button, Box, TextField, InputLabel, FormControl, MenuItem, Select, Checkbox} from '@mui/material';
 import ProjectCard from '@/components/ProjectCard';
 import { AdminProvider } from '@/context/AdminContext';
 import AdminCheck from '@/components/AdminCheck';
@@ -7,6 +7,9 @@ import AdminCheck from '@/components/AdminCheck';
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Completed' | 'In Progress' | 'Planned' | 'Dropped'>('All');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -24,12 +27,72 @@ export default function ProjectsPage() {
     fetchProjects();
   }, []);
 
+  const tagCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    projects.forEach((project) => {
+      project.tags?.forEach((tag: string) => {
+        counts[tag] = (counts[tag] || 0) + 1;
+      });
+    });
+    return counts;
+  }, [projects]);
+
+  const filteredProjects = projects.filter((project) => {
+    const matchesStatus =
+      statusFilter === 'All' || project.status === statusFilter;
+  
+    const matchesSearch =
+      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      project.tags?.some((tag: string) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+    const matchesTags = selectedTags.length === 0 || selectedTags.every((tag) => project.tags?.includes(tag));
+    return matchesStatus && matchesSearch && matchesTags;
+  });
+
   return (
     <AdminProvider>
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h3" gutterBottom> Projects</Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, mb: 4 }}>
+      <TextField
+        label="Search projects..."
+        variant="outlined"
+        value={searchQuery}
+        sx={{ flexGrow: 1 }}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      
+      <FormControl sx={{ minWidth: 220 }}>
+        <InputLabel>Tags</InputLabel>
+        <Select multiple value={selectedTags} onChange={(e) => setSelectedTags(e.target.value as string[])} renderValue={(selected) => selected.join(', ')} label="Tags">
+        {Object.entries(tagCounts).map(([tag, count]) => (
+          <MenuItem key={tag} value={tag}>
+            <Checkbox checked={selectedTags.indexOf(tag) > -1} />
+            <Typography sx={{ ml: 1 }}>{tag} ({count})</Typography>
+          </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <FormControl sx={{ minWidth: 140 }}>
+        <InputLabel>Status</InputLabel>
+        <Select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as any)}
+          label="Status"
+        >
+          <MenuItem value="All">All</MenuItem>
+          <MenuItem value="Completed">Completed</MenuItem>
+          <MenuItem value="In Progress">In Progress</MenuItem>
+          <MenuItem value="Planned">Planned</MenuItem>
+          <MenuItem value="Dropped">Dropped</MenuItem>
+        </Select>
+      </FormControl>
+    </Box>
       <AdminCheck> <Button variant="contained" color="info" sx={{mb: 5}} href="/admin/create-post"> Create New Project </Button> </AdminCheck>
-      <Grid container spacing={4}>
+      <Grid container spacing={2} >
         {loading
           ? Array.from({ length: 4 }).map((_, i) => (
               <Grid item xs={12} sm={6} md={4} key={i}>
@@ -38,7 +101,7 @@ export default function ProjectsPage() {
                 <Skeleton width="40%" />
               </Grid>
             ))
-          : projects.map((project) => (
+          : filteredProjects.map((project) => (
             <Grid item xs={12} sm={6} md={4} sx={{display: 'flex'}}>
                 <ProjectCard
                     title={project.title}

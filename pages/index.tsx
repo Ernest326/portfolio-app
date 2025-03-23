@@ -5,7 +5,7 @@ export default function HomePage() {
   const router = useRouter();
 
   return (
-    <Container maxWidth="md" sx={{ py: 10 }}>
+    <Container maxWidth="lg" sx={{ py: 10 }}>
       <Stack
         direction={{ xs: 'column', md: 'row' }}
         spacing={6}
