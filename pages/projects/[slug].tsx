@@ -14,7 +14,7 @@ export default function ProjectDetail({ project }: any) {
     <Container maxWidth="md" sx={{ py: 6 }}>
      
       {/* Title */}
-      <IconButton onClick={() => router.back()}>
+      <IconButton onClick={() => router.push('/projects')}>
           <ArrowBack />
         </IconButton>
       <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
@@ -25,12 +25,12 @@ export default function ProjectDetail({ project }: any) {
       </Stack>
 
       {/* Date */}
-      <Typography
-        variant="body2"
-        color="text.secondary"
-        sx={{ mb: 4 }}
-      >
+      <Typography variant="body2" color="text.secondary">
         Posted on {new Date(project.createdAt).toLocaleDateString()}
+      </Typography>
+
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+          {project.updatedAt!=''?'Last Updated on ' + new Date(project.updatedAt).toLocaleDateString():''}
       </Typography>
 
       {/* Optional Banner */}

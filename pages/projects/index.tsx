@@ -37,6 +37,11 @@ export default function ProjectsPage() {
     return counts;
   }, [projects]);
 
+  const sortedTags = useMemo(() => {
+    return Object.entries(tagCounts)
+      .sort(([, countA], [, countB]) => countB - countA);
+  }, [tagCounts]);
+
   const filteredProjects = projects.filter((project) => {
     const matchesStatus =
       statusFilter === 'All' || project.status === statusFilter;
@@ -55,7 +60,9 @@ export default function ProjectsPage() {
     <AdminProvider>
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h3" gutterBottom> Projects</Typography>
+
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, mb: 4 }}>
+
       <TextField
         label="Search projects..."
         variant="outlined"
