@@ -31,6 +31,7 @@ export default function ProjectForm({initialData, onSubmit}: ProjectFormProps) {
           const url = markdown.match(/\((.*?)\)/)?.[1]; // Extract URL from markdown
           if (url) setCoverImage(url);
       }} />
+      <TextField label="cover-url" fullWidth value={coverImage} onChange={e => setCoverImage(e.target.value)} margin="normal" />
       {coverImage && (<Box component="img" src={coverImage} alt="Cover Preview" sx={{ width: '100%', maxHeight: 200, objectFit: 'cover', mt: 2, borderRadius: 2 }}/>)}
 
       <TextField label="Slug" fullWidth required value={slug} onChange={e => setSlug(e.target.value)} margin="normal" />
@@ -40,6 +41,7 @@ export default function ProjectForm({initialData, onSubmit}: ProjectFormProps) {
               <MenuItem value="Completed">Completed</MenuItem>
               <MenuItem value="In Progress">In Progress</MenuItem>
               <MenuItem value="Planned">Planned</MenuItem>
+              <MenuItem value="On Hold">On Hold</MenuItem>
               <MenuItem value="Dropped">Dropped</MenuItem>
           </Select>
       </FormControl>

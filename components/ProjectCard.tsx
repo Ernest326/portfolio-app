@@ -8,9 +8,10 @@ interface ProjectCardProps {
   coverImage?: string;
   status?: string;
   tags?: string[];
+  dateCreated?: string;
 }
 
-export default function ProjectCard({title,slug,description,coverImage,status='Completed',tags=[]}: ProjectCardProps) {
+export default function ProjectCard({title,slug,description,coverImage,status='Completed',tags=[], dateCreated=''}: ProjectCardProps) {
   const router = useRouter();
   const theme = useTheme();
 
@@ -18,6 +19,7 @@ export default function ProjectCard({title,slug,description,coverImage,status='C
     'Completed': 'success',
     'In Progress': 'warning',
     'Planned': 'normal',
+    'On Hold': 'info',
     'Dropped': 'error'
   }[status];
 
@@ -42,7 +44,7 @@ export default function ProjectCard({title,slug,description,coverImage,status='C
 
           <Chip label={status} color={statusColor as any} size="small" sx={{ mb: 1}} />
 
-          <Stack direction="row" spacing={1} flexWrap="wrap">
+          <Stack direction="row" mb={2} spacing={1} flexWrap="wrap">
             {tags.map((tag, index) => (
               <Chip
                 key={index}
@@ -54,6 +56,9 @@ export default function ProjectCard({title,slug,description,coverImage,status='C
             ))}
 
           </Stack>
+            
+          <Typography color="text.secondary">{dateCreated}</Typography>
+
         </CardContent>
       </CardActionArea>
     </Card>

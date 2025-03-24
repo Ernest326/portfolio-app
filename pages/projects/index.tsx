@@ -9,7 +9,7 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Completed' | 'In Progress' | 'Planned' | 'Dropped'>('All');
+  const [statusFilter, setStatusFilter] = useState<'All' | 'Completed' | 'In Progress' | 'Planned' | 'On Hold' | 'Dropped'>('All');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   useEffect(() => {
@@ -17,7 +17,10 @@ export default function ProjectsPage() {
       try {
         const res = await fetch('/api/projects');
         const data = await res.json();
-        setProjects(data);
+        const sorted = data.sort((a: any, b: any) => {
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+        setProjects(sorted);
       } catch (err) {
         console.error('Failed to load projects:', err);
       } finally {
@@ -39,8 +42,7 @@ export default function ProjectsPage() {
   }, [projects]);
 
   const sortedTags = useMemo(() => {
-    return Object.entries(tagCounts)
-      .sort(([, countA], [, countB]) => countB - countA);
+    return Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
   }, [tagCounts]);
 
   const filteredProjects = projects.filter((project) => {
@@ -75,7 +77,7 @@ export default function ProjectsPage() {
       <FormControl sx={{ minWidth: 220 }}>
         <InputLabel>Tags</InputLabel>
         <Select multiple value={selectedTags} onChange={(e) => setSelectedTags(e.target.value as string[])} renderValue={(selected) => selected.join(', ')} label="Tags">
-        {Object.entries(tagCounts).map(([tag, count]) => (
+        {sortedTags.map(([tag, count]) => (
           <MenuItem key={tag} value={tag}>
             <Checkbox checked={selectedTags.indexOf(tag) > -1} />
             <Typography sx={{ ml: 1 }}>{tag} ({count})</Typography>
@@ -95,6 +97,7 @@ export default function ProjectsPage() {
           <MenuItem value="Completed">Completed</MenuItem>
           <MenuItem value="In Progress">In Progress</MenuItem>
           <MenuItem value="Planned">Planned</MenuItem>
+          <MenuItem value="On Hold">On Hold</MenuItem>
           <MenuItem value="Dropped">Dropped</MenuItem>
         </Select>
       </FormControl>
@@ -124,6 +127,7 @@ export default function ProjectsPage() {
                     coverImage={project.coverImage}
                     status={project.status}
                     tags={project.tags}
+                    dateCreated={new Date(project.createdAt).toLocaleDateString()}
                 />
                 </motion.div>
             </Grid>
