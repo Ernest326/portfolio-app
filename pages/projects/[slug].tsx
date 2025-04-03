@@ -33,22 +33,6 @@ export default function ProjectDetail({ project }: any) {
           {project.updatedAt!=''?'Last Updated on ' + new Date(project.updatedAt).toLocaleDateString():''}
       </Typography>
 
-      {/* Optional Banner */}
-      {project.coverImage && (
-        <Box
-          component="img"
-          src={project.coverImage}
-          alt={project.title}
-          sx={{
-            width: '100%',
-            borderRadius: 2,
-            boxShadow: 2,
-            mb: 4,
-            maxHeight: 400,
-            objectFit: 'cover',
-          }}
-        />
-      )}
 
       {/* Markdown Content */}
       <MarkdownPreview content={project.content} />
