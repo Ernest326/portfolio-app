@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Layout from '@/components/Layout';
 import { getTheme } from '@/lib/theme';
 import { AdminProvider } from '@/context/AdminContext';
+import Footer from '@/components/Footer';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [mode, setMode] = useState<'light' | 'dark'>('light');
