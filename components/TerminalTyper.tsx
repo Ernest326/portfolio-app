@@ -17,10 +17,8 @@ const terminalButtonStyles = {
 };
 
 const TerminalTyper: React.FC = () => {
-  const yourName = "Ernest"; // <-- REPLACE THIS WITH YOUR NAME
-  const githubUrl = "https://github.com/Ernest326"; // <-- REPLACE THIS
-  const linkedinUrl = "https://linkedin.com/in/ernest-warzuchowski-63b85b306/"; // <-- REPLACE THIS
-
+  const githubUrl = "https://github.com/Ernest326";
+  const linkedinUrl = "https://linkedin.com/in/ernest-warzuchowski-63b85b306/";
   const introEl = useRef<HTMLSpanElement>(null);
   const roleEl = useRef<HTMLSpanElement>(null);
   const typedIntroInstance = useRef<Typed | null>(null);
@@ -30,7 +28,7 @@ const TerminalTyper: React.FC = () => {
 
   useEffect(() => {
     if (!introEl.current || typedIntroInstance.current) return;
-    const introString = `Hello!<br />My name is ${yourName}.<br />I am a &nbsp`;
+    const introString = `Hello!<br />My name is Ernest.<br />I am a &nbsp`;
     typedIntroInstance.current = new Typed(introEl.current, {
       strings: [introString],
       typeSpeed: 40,
@@ -47,11 +45,11 @@ const TerminalTyper: React.FC = () => {
       typedIntroInstance.current?.destroy();
       typedIntroInstance.current = null;
     };
-  }, [yourName]);
+  }, []);
 
   useEffect(() => {
     if (!introComplete || !roleEl.current || typedRoleInstance.current) return;
-    const roles = ["Hobbyist.", "AI Enthusiast.", "VR Enthusiast.", "Full-Stack Developer."];
+    const roles = ["Hobbyist.", "AI Enthusiast.", "VR Enthusiast.", "Full-Stack Developer.", "Computer Science Student.", "Software Engineer"];
     typedRoleInstance.current = new Typed(roleEl.current, {
       strings: roles,
       typeSpeed: 50,
@@ -68,14 +66,6 @@ const TerminalTyper: React.FC = () => {
       typedRoleInstance.current = null;
     };
   }, [introComplete]);
-
-  const handleViewProjectsClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    const projectsSection = document.getElementById('projects-section'); // Ensure this ID exists on your ProjectsSection component
-    if (projectsSection) {
-      projectsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  };
 
   return (
     <Box
@@ -175,7 +165,7 @@ const TerminalTyper: React.FC = () => {
             }}
             >
             <img
-              src="profile.jpg" // Replace with your profile image path
+              src="profile.jpg"
               alt="Profile"
               style={{
                 objectFit: 'cover',
@@ -214,24 +204,40 @@ const TerminalTyper: React.FC = () => {
               >
                 [ VIEW PROJECTS ]
               </Button>
-              <Button
+                <Button
                 variant="text"
                 href={githubUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={terminalButtonStyles}
-              >
+                startIcon={
+                  <img
+                  src="https://img.icons8.com/ios11/512/FFFFFF/github.png"
+                  alt=""
+                  style={{ width: 20, height: 20, marginRight: 4 }}
+                  />
+                }
+                >
                 [ VIEW GITHUB ]
-              </Button>
-              <Button
+                </Button>
+                <Button
                 variant="text"
                 href={linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 sx={terminalButtonStyles}
-              >
+                startIcon={
+                  <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/81/LinkedIn_icon.svg/1024px-LinkedIn_icon.svg.png"
+                  alt=""
+                  style={{ width: 20, height: 20, marginRight: 4 }}
+                  />
+                }
+                >
                 [ VIEW LINKEDIN ]
-              </Button>
+                </Button>
+                {/* Icon images below the buttons */}
+
             </Box>
           </motion.div>
         )}
