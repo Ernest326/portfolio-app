@@ -8,7 +8,7 @@ const HeroSection: React.FC = () => {
     <Box
       sx={{
         height: '100vh',
-        width: '100vw',
+        width: '100%',
         position: 'relative',
         overflow: 'hidden',
         display: 'flex',
