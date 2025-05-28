@@ -38,6 +38,7 @@ export default function RecentProjects({ limit = 5, projectIds = [] }: RecentPro
         if(projectIds.length > 0) {
             // Filter projects by provided IDs if any
             const sorted = data.filter((project: ProjectProps) => projectIds.includes(project.slug))
+                                .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
             setProjects(sorted.slice(0, limit));
         } else {
             const sorted = data.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
