@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const client = await clientPromise;
@@ -7,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'GET') {
     try {
-      const settings = await db.collection('settings').findOne({ _id: 'global' });
+      const settings = await db.collection<{ _id: string }>('settings').findOne({ _id: "global" });
       if (!settings) return res.status(404).json({ message: 'Settings not found' });
       res.status(200).json(settings);
     } catch (error) {
@@ -17,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else if (req.method === 'PUT') {
     try {
       const { ...updateData } = req.body;
-      const result = await db.collection('settings').updateOne({ _id: "global" }, { $set: updateData });
+      const result = await db.collection<{ _id: string }>('settings').updateOne({ _id: "global" }, { $set: updateData });
       if (result.matchedCount === 0) return res.status(404).json({ message: 'Settings not found' });
       res.status(200).json({ message: 'Settings updated successfully' });
     } catch (error) {
