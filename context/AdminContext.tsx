@@ -20,22 +20,19 @@ export const AdminProvider = ({ children }: { children: React.ReactNode }) => {
   // Check for token on load
   useEffect(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (!saved) {
-      setLoading(false);
-      return;
-    }
-  
-    fetch('/api/auth', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: saved }),
-    }).then((res) => {
-      setIsAdmin(res.ok);
-      if (res.ok) setToken(saved);
-    }).finally(() => {
-      setLoading(false);
-    });
-    }, []);
+    const verify = saved
+      ? fetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: saved }),
+        }).then((res) => {
+          setIsAdmin(res.ok);
+          if (res.ok) setToken(saved);
+        })
+      : Promise.resolve();
+
+    verify.catch(() => setIsAdmin(false)).finally(() => setLoading(false));
+  }, []);
 
   const adminCheck = (token : string) => {
     fetch('/api/auth', {

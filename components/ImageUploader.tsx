@@ -40,11 +40,11 @@ export default function ImageUploader({ onUpload }: ImageUploaderProps) {
   };
 
   return (
-    <Box mt={2}>
+    <Box sx={{ mt: 2 }}>
       <Typography variant="subtitle1" gutterBottom>
         Upload Image to Embed:
       </Typography>
-      <Button variant="outlined" color="info" component="label" disabled={uploading}>
+      <Button variant="outlined" component="label" nativeButton={false} disabled={uploading}>
         {uploading ? 'Uploading...' : 'Choose Image'}
         <input
           type="file"

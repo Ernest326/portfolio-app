@@ -1,139 +1,134 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Container, Typography, Grid, Skeleton, Button, Box, TextField, InputLabel, FormControl, MenuItem, Select, Checkbox} from '@mui/material';
-import ProjectCard from '@/components/ProjectCard';
-import { AdminProvider } from '@/context/AdminContext';
+import { useMemo, useState } from 'react';
+import type { GetStaticProps } from 'next';
+import NextLink from 'next/link';
+import { useRouter } from 'next/router';
+import { Box, Button, Chip, InputAdornment, Stack, TextField, Typography } from '@mui/material';
+import Search from '@mui/icons-material/Search';
 import AdminCheck from '@/components/AdminCheck';
-import { motion } from 'framer-motion';
+import ProjectList from '@/components/ProjectList';
+import Seo from '@/components/Seo';
+import { yearOf } from '@/lib/format';
+import { getProjectSummaries } from '@/lib/projects';
+import { PROJECT_STATUSES, type ProjectSummary } from '@/lib/types';
+import { READING_MAX_WIDTH } from '@/lib/ui';
 
-export default function ProjectsPage() {
-  const [projects, setProjects] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'All' | 'Completed' | 'In Progress' | 'Planned' | 'On Hold' | 'Dropped'>('All');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+interface ProjectsPageProps {
+  projects: ProjectSummary[];
+}
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await fetch('/api/projects');
-        const data = await res.json();
-        const sorted = data.sort((a: any, b: any) => {
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-        setProjects(sorted);
-      } catch (err) {
-        console.error('Failed to load projects:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+export const getStaticProps: GetStaticProps<ProjectsPageProps> = async () => ({
+  props: { projects: await getProjectSummaries() },
+  revalidate: 600,
+});
 
-    fetchProjects();
-  }, []);
+function groupByYear(projects: ProjectSummary[]): Array<[string, ProjectSummary[]]> {
+  const groups = new Map<string, ProjectSummary[]>();
+  for (const project of projects) {
+    const year = yearOf(project.createdAt);
+    groups.set(year, [...(groups.get(year) ?? []), project]);
+  }
+  return [...groups.entries()];
+}
 
-  const tagCounts = useMemo(() => {
-    const counts: Record<string, number> = {};
-    projects.forEach((project) => {
-      project.tags?.forEach((tag: string) => {
-        counts[tag] = (counts[tag] || 0) + 1;
-      });
+export default function ProjectsPage({ projects }: ProjectsPageProps) {
+  const router = useRouter();
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('All');
+  const tag = typeof router.query.tag === 'string' ? router.query.tag : null;
+
+  const setTag = (next: string | null) => {
+    router.replace({ pathname: '/projects', query: next ? { tag: next } : {} }, undefined, {
+      shallow: true,
+      scroll: false,
     });
-    return counts;
+  };
+
+  const statusOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const project of projects) counts.set(project.status, (counts.get(project.status) ?? 0) + 1);
+    return [
+      ['All', projects.length] as const,
+      ...PROJECT_STATUSES.filter((value) => counts.has(value)).map((value) => [value, counts.get(value)!] as const),
+    ];
   }, [projects]);
 
-  const sortedTags = useMemo(() => {
-    return Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
-  }, [tagCounts]);
-
-  const filteredProjects = projects.filter((project) => {
-    const matchesStatus =
-      statusFilter === 'All' || project.status === statusFilter;
-  
-    const matchesSearch =
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.tags?.some((tag: string) =>
-        tag.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-
-    const matchesTags = selectedTags.length === 0 || selectedTags.every((tag) => project.tags?.includes(tag));
-    return matchesStatus && matchesSearch && matchesTags;
-  });
+  const filtered = useMemo(() => {
+    const needle = search.trim().toLowerCase();
+    return projects.filter(
+      (project) =>
+        (status === 'All' || project.status === status) &&
+        (!tag || project.tags.includes(tag)) &&
+        (!needle ||
+          [project.title, project.description, ...project.tags].some((value) => value.toLowerCase().includes(needle))),
+    );
+  }, [projects, search, status, tag]);
 
   return (
-    <AdminProvider>
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h3" gutterBottom> Projects</Typography>
-
-      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 2, mb: 4 }}>
-
-      <TextField
-        label="Search projects..."
-        variant="outlined"
-        value={searchQuery}
-        sx={{ flexGrow: 1 }}
-        onChange={(e) => setSearchQuery(e.target.value)}
+    <>
+      <Seo
+        title="Projects"
+        description="Things I've built, from game engines and ray tracers to full-stack web apps."
+        path="/projects"
       />
-      
-      <FormControl sx={{ minWidth: 220 }}>
-        <InputLabel>Tags</InputLabel>
-        <Select multiple value={selectedTags} onChange={(e) => setSelectedTags(e.target.value as string[])} renderValue={(selected) => selected.join(', ')} label="Tags">
-        {sortedTags.map(([tag, count]) => (
-          <MenuItem key={tag} value={tag}>
-            <Checkbox checked={selectedTags.indexOf(tag) > -1} />
-            <Typography sx={{ ml: 1 }}>{tag} ({count})</Typography>
-          </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Box component="header" sx={{ mb: 5 }}>
+        <Stack direction="row" spacing={2} sx={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
+          <Typography variant="h1">Projects</Typography>
+          <AdminCheck>
+            <Button component={NextLink} href="/admin/create-post" nativeButton={false} variant="outlined" size="small">
+              New project
+            </Button>
+          </AdminCheck>
+        </Stack>
+        <Typography color="textSecondary" sx={{ mt: 1.5, maxWidth: READING_MAX_WIDTH }}>
+          Things I&apos;ve built over the years, from game engines and ray tracers to full-stack web apps. Newest first.
+        </Typography>
+      </Box>
 
-      <FormControl sx={{ minWidth: 140 }}>
-        <InputLabel>Status</InputLabel>
-        <Select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as any)}
-          label="Status"
-        >
-          <MenuItem value="All">All</MenuItem>
-          <MenuItem value="Completed">Completed</MenuItem>
-          <MenuItem value="In Progress">In Progress</MenuItem>
-          <MenuItem value="Planned">Planned</MenuItem>
-          <MenuItem value="On Hold">On Hold</MenuItem>
-          <MenuItem value="Dropped">Dropped</MenuItem>
-        </Select>
-      </FormControl>
-    </Box>
-      <AdminCheck> <Button variant="contained" color="info" sx={{mb: 5}} href="/admin/create-post"> Create New Project </Button> </AdminCheck>
-      <Grid container spacing={2} >
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => (
-              <Grid item xs={12} sm={6} md={4} key={i}>
-                <Skeleton variant="rectangular" height={200} />
-                <Skeleton width="60%" />
-                <Skeleton width="40%" />
-              </Grid>
-            ))
-          : filteredProjects.map((project, i) => (
-            <Grid item xs={12} sm={6} md={4} sx={{display: 'flex'}}>
-                <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05, duration: 0.4, ease: 'easeOut' }}
-                style={{ width: '100%' }}
-                >
-                <ProjectCard
-                    title={project.title}
-                    slug={project.slug}
-                    description={project.description}
-                    coverImage={project.coverImage}
-                    status={project.status}
-                    tags={project.tags}
-                    dateCreated={new Date(project.createdAt).toLocaleDateString()}
-                />
-                </motion.div>
-            </Grid>
-            ))}
-      </Grid>
-    </Container>
-    </AdminProvider>
+      <Stack spacing={2} sx={{ mb: 7 }}>
+        <TextField
+          size="small"
+          fullWidth
+          placeholder="Search by title, description or tag"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search fontSize="small" />
+                </InputAdornment>
+              ),
+            },
+            htmlInput: { 'aria-label': 'Search projects' },
+          }}
+        />
+        <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 1 }}>
+          {statusOptions.map(([value, count]) => (
+            <Chip
+              key={value}
+              size="small"
+              variant={status === value ? 'filled' : 'outlined'}
+              aria-pressed={status === value}
+              onClick={() => setStatus(value)}
+              label={
+                <>
+                  {value}{' '}
+                  <Box component="span" sx={{ opacity: 0.6 }}>
+                    {count}
+                  </Box>
+                </>
+              }
+            />
+          ))}
+          {tag && <Chip size="small" color="primary" label={tag} onDelete={() => setTag(null)} />}
+        </Stack>
+      </Stack>
+
+      {filtered.length > 0 ? (
+        <ProjectList groups={groupByYear(filtered)} onTagClick={setTag} />
+      ) : (
+        <Typography color="textSecondary">No projects match those filters.</Typography>
+      )}
+    </>
   );
 }
