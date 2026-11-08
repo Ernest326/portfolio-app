@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# CV sources (contain private contact details); the public copy lives at public/cv.pdf
+/main*.tex
+/CSSE_CV*.pdf
+
+# local code-intelligence output
+/graphify-out/
