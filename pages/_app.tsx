@@ -1,34 +1,22 @@
-import { AppProps } from 'next/app';
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import { CssBaseline } from '@mui/material';
+import { ThemeProvider } from '@mui/material/styles';
 import Layout from '@/components/Layout';
-import { getTheme } from '@/lib/theme';
 import { AdminProvider } from '@/context/AdminContext';
-import Footer from '@/components/Footer';
+import { theme } from '@/lib/theme';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark') setMode('dark');
-  }, []);
-
-  const toggleTheme = () => {
-    const newMode = mode === 'light' ? 'dark' : 'light';
-    setMode(newMode);
-    localStorage.setItem('theme', newMode);
-  };
-
-  const theme = useMemo(() => getTheme(mode), [mode]);
-
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <ThemeProvider theme={theme} defaultMode="system">
+      <CssBaseline enableColorScheme />
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" key="viewport" />
+      </Head>
       <AdminProvider>
-      <Layout toggleTheme={toggleTheme} mode={mode}>
-        <Component {...pageProps} />
-      </Layout>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </AdminProvider>
     </ThemeProvider>
   );

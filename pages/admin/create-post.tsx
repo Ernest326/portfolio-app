@@ -1,15 +1,15 @@
-import {Container} from '@mui/material';
+import { useRouter } from 'next/router';
+import { Typography } from '@mui/material';
+import ProjectForm, { type ProjectFormData } from '@/components/ProjectForm';
+import Seo from '@/components/Seo';
 import { useAdmin } from '@/context/AdminContext';
 import AdminLogin from './login';
-import ProjectForm from '@/components/ProjectForm';
-import { useRouter } from 'next/router';
 
 export default function CreatePost() {
-
-  const { isAdmin } = useAdmin();
+  const { isAdmin, loading } = useAdmin();
   const router = useRouter();
 
-  const handleSubmit = async (data : any) => {
+  const handleSubmit = async (data: ProjectFormData) => {
     const res = await fetch('/api/projects', {
       method: 'POST',
       headers: {
@@ -20,23 +20,23 @@ export default function CreatePost() {
     });
 
     if (res.ok) {
-      router.push('/projects/'+data.slug);
+      router.push(`/projects/${data.slug}`);
     } else {
-      alert('Failed to create project');
+      const { message } = await res.json().catch(() => ({ message: '' }));
+      alert(`Failed to create project${message ? `: ${message}` : ''}`);
     }
   };
 
+  if (loading) return null;
+  if (!isAdmin) return <AdminLogin />;
+
   return (
-
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      {!isAdmin ? (
-        <>
-          <AdminLogin/>
-        </>
-      ) : (
-        <ProjectForm onSubmit={handleSubmit} />
-      )}
-    </Container>
-
+    <>
+      <Seo title="New project" noindex />
+      <Typography variant="h1" sx={{ mb: 4 }}>
+        New project
+      </Typography>
+      <ProjectForm onSubmit={handleSubmit} />
+    </>
   );
 }

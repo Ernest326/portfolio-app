@@ -1,24 +1,30 @@
-import React from 'react';
-import {Box, Container, Typography, Link} from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
+import SocialLinks from '@/components/SocialLinks';
+import { profile } from '@/content/profile';
+import { CONTENT_MAX_WIDTH } from '@/lib/ui';
 
-const Footer: React.FC = () => {
-    return (
+export default function Footer() {
+  return (
+    <Box component="footer" sx={{ mt: { xs: 12, sm: 16 } }}>
+      <Container maxWidth={false} sx={{ maxWidth: CONTENT_MAX_WIDTH }}>
         <Box
-            component="footer"
-            sx={{
-                py: 4,
-                backgroundColor: 'primary.secondary',
-                color: 'white',
-                textAlign: 'center',
-            }}
+          sx={{
+            py: 4,
+            borderTop: 1,
+            borderColor: 'divider',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 2,
+          }}
         >
-            <Container maxWidth="sm">
-                <Typography variant="body2" color="text.secondary" align="center">
-                    © {new Date().getFullYear()} Ernest's Portfolio - Ernest W.
-                </Typography>
-            </Container>
+          <Typography variant="body2" color="textSecondary" suppressHydrationWarning>
+            © {new Date().getFullYear()} {profile.name}
+          </Typography>
+          <SocialLinks />
         </Box>
-    )
-};
-
-export default Footer;
+      </Container>
+    </Box>
+  );
+}

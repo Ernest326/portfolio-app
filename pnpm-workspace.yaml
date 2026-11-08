@@ -1,0 +1,18 @@
+allowBuilds:
+  # sharp ships prebuilt binaries; its install script only matters when compiling libvips from source
+  sharp: false
+
+overrides:
+  # next pins postcss@8.4.31 exactly; patched 8.5.x is drop-in compatible
+  "postcss@<8.5.23": ^8.5.23
+  # transitive via @emotion/babel-plugin > babel-plugin-macros > cosmiconfig
+  "yaml@<1.10.3": ^1.10.3
+  # dev-only, via eslint; GHSA-g3hv-75wg-m249 is fixed in 11.0.1
+  "minimatch@>=7.0.0 <11.0.1": ^11.0.1
+
+peerDependencyRules:
+  allowedVersions:
+    # eslint-config-next >=16.4 supports ESLint 10; these bundled plugins haven't widened their peer ranges yet
+    eslint-plugin-react>eslint: "10"
+    eslint-plugin-jsx-a11y>eslint: "10"
+    eslint-plugin-import>eslint: "10"

@@ -1,16 +1,20 @@
-import { GetServerSideProps } from 'next';
-import clientPromise from '@/lib/mongodb';
-import ProjectForm from '@/components/ProjectForm';
+import type { GetServerSideProps } from 'next';
+import NextLink from 'next/link';
 import { useRouter } from 'next/router';
-import { Container, Button, Stack } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
+import ProjectForm, { type ProjectFormData } from '@/components/ProjectForm';
+import Seo from '@/components/Seo';
 import { useAdmin } from '@/context/AdminContext';
+import { getProjectBySlug } from '@/lib/projects';
+import type { Project } from '@/lib/types';
+import { READING_MAX_WIDTH } from '@/lib/ui';
 import AdminLogin from '../login';
 
-export default function EditProject({ project }: any) {
+export default function EditProject({ project }: { project: Project }) {
   const router = useRouter();
-  const { isAdmin } = useAdmin();
+  const { isAdmin, loading } = useAdmin();
 
-  const handleSubmit = async (updatedData: any) => {
+  const handleSubmit = async (updatedData: ProjectFormData) => {
     const res = await fetch(`/api/projects/${project._id}`, {
       method: 'PUT',
       headers: {
@@ -20,17 +24,17 @@ export default function EditProject({ project }: any) {
       body: JSON.stringify(updatedData),
     });
 
-    const resText = await res.text();
-    console.log('Server responded with:', res.status, resText);
-
     if (res.ok) {
-      router.push(`/projects/${project.slug}`);
+      router.push(`/projects/${updatedData.slug}`);
     } else {
-      alert('Failed to update project');
+      const { message } = await res.json().catch(() => ({ message: '' }));
+      alert(`Failed to update project${message ? `: ${message}` : ''}`);
     }
   };
 
   const handleDelte = async () => {
+    if (!window.confirm(`Delete "${project.title}"? This can't be undone.`)) return;
+
     const res = await fetch(`/api/projects/${project._id}`, {
       method: 'DELETE',
       headers: {
@@ -43,46 +47,43 @@ export default function EditProject({ project }: any) {
     } else {
       alert('Failed to delete project');
     }
-  }
+  };
+
+  if (loading) return null;
+  if (!isAdmin) return <AdminLogin />;
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-
-        {!isAdmin ? (
-            <>
-            <AdminLogin/>
-            </>
-        ) : (
-            <>
-            <Stack flexDirection='row' justifyContent='space-between' alignItems='center'>
-            <Button variant='contained' color='info' onClick={() => router.push(`/projects/${project.slug}`)}>Back</Button>
-            <Button variant='contained' color='error' onClick={() => handleDelte()}>Delete</Button> 
-            </Stack>
-            <ProjectForm initialData={project} onSubmit={handleSubmit} />
-            </>
-        )}
-
-    </Container>
+    <>
+      <Seo title={`Edit ${project.title}`} noindex />
+      <Stack
+        direction="row"
+        spacing={2}
+        sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 4, maxWidth: READING_MAX_WIDTH }}
+      >
+        <Typography variant="h1">Edit project</Typography>
+        <Stack direction="row" spacing={1}>
+          <Button
+            component={NextLink}
+            href={`/projects/${project.slug}`}
+            nativeButton={false}
+            variant="outlined"
+            size="small"
+          >
+            View
+          </Button>
+          <Button variant="outlined" color="error" size="small" onClick={handleDelte}>
+            Delete
+          </Button>
+        </Stack>
+      </Stack>
+      <ProjectForm initialData={project} onSubmit={handleSubmit} />
+    </>
   );
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const slug = context.params?.slug;
-  const client = await clientPromise;
-  const db = client.db('portfolio');
-
-  const project = await db.collection('projects').findOne({ slug });
-
+  const project = typeof slug === 'string' ? await getProjectBySlug(slug) : null;
   if (!project) return { notFound: true };
-
-  const serializedProject = {
-    ...project,
-    _id: project._id.toString(),
-    createdAt: project.createdAt?.toString() ?? '',
-    updatedAt: project.updatedAt?.toString() ?? ''
-  };
-
-  return {
-    props: { project: serializedProject },
-  };
+  return { props: { project } };
 };
